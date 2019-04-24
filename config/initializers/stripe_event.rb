@@ -2,7 +2,7 @@ StripeEvent.configure do |events|
   events.subscribe 'charge.failed' do |event|
     # aborts execution for events that came through Stripe Connect webhooks
     # they are irrelevant to Koudoku
-    return nil if event.try(:account)
+    break if event.try(:account)
     
     stripe_id = event.data.object['customer']
     subscription = ::Subscription.find_by_stripe_id(stripe_id)
@@ -10,7 +10,7 @@ StripeEvent.configure do |events|
   end
   
   events.subscribe 'invoice.payment_succeeded' do |event|
-    return nil if event.try(:account)
+    break if event.try(:account)
     
     stripe_id = event.data.object['customer']
     amount = event.data.object['total'].to_f / 100.0
@@ -19,7 +19,7 @@ StripeEvent.configure do |events|
   end
   
   events.subscribe 'charge.dispute.created' do |event|
-    return nil if event.try(:account)
+    break if event.try(:account)
     
     stripe_id = event.data.object['customer']
     subscription = ::Subscription.find_by_stripe_id(stripe_id)
@@ -27,7 +27,7 @@ StripeEvent.configure do |events|
   end
   
   events.subscribe 'customer.subscription.deleted' do |event|
-    return nil if event.try(:account)
+    break if event.try(:account)
     
     stripe_id = event.data.object['customer']
     subscription = ::Subscription.find_by_stripe_id(stripe_id)
